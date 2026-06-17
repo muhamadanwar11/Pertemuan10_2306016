@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306016/models/product_model.dart';
+import 'package:pertemuan10_2306016/pages/product_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
@@ -13,8 +14,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String username = "";
 
-  //variabel utama dari daftar produk
+  //PRODUCT LIST
   List<ProductModel> products = [];
+  int totalProducts = 0;
 
   @override
   void initState() {
@@ -22,49 +24,23 @@ class _HomePageState extends State<HomePage> {
     getUser();
     loadProducts();
   }
-
+//===============
+// loadd produk
+//===============
   Future<void> loadProducts() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> productsList = prefs.getStringList('products') ?? [];
+    totalProducts = productsList.length;
     setState(() {
       products = productsList 
+      .reversed
+      .take(3)
       .map((item)=>ProductModel.fromJson(item))
       .toList();
     });
   }
+  
 
-  Future<void> saveProducts() async{
-    final prefs = await SharedPreferences.getInstance();
-    List<String> productList = products.map((e) => e.tojson()).toList();
-    await prefs.setStringList('products', productList);
-  }
-
-  Future<void> addProduct(ProductModel product) async{
-    setState(() {
-      products.add(product);
-    });
-    await saveProducts();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Produk berhasil ditambahkan")),
-    );
-  }
-
-  Future<void> updateProduct(int index,ProductModel updatedProduct)async{
-    setState(() {
-      products[index]= updatedProduct;
-    });
-    await saveProducts();
-  }
-
-  Future<void> deleteProduct(int index)async{
-    setState(() {
-      products.removeAt(index);
-    });
-    await saveProducts();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Produk berhasil dihapus")),
-    );
-  }
 
   Future<void> getUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,72 +56,10 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
   }
 
-  void showForm({ProductModel? product, int? index}){
-    TextEditingController nameController = TextEditingController(
-      text: product?.name ?? "");
-    TextEditingController descriptionController = TextEditingController(
-      text: product?.description ?? "");
-    TextEditingController priceController = TextEditingController(
-      text: product?.price.toString() ?? "");
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(product == null ? "Tambah Produk" : "Edit Produk"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Nama Produk"),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(labelText: "Deskripsi"),
-            ),
-            TextField(
-              controller: priceController,
-              decoration: const InputDecoration(labelText: "Harga"),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          TextButton(
-            onPressed: () {
-              if (product == null) {
-                addProduct(
-                  ProductModel(
-                    name: nameController.text,
-                    description: descriptionController.text,
-                    price: int.parse(priceController.text),
-                  ),
-                );
-              } else {
-                updateProduct(
-                  index!,
-                  ProductModel(
-                    name: nameController.text,
-                    description: descriptionController.text,
-                    price: int.parse(priceController.text),
-                  ),
-                );
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Simpan"),
-          ),
-        ],
-      ),
-    );
-  }
+  
 
 
-
+//UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,6 +149,27 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Text("Tota Produk: ${totalProducts.toString()}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ), 
+                // tombol pindah halaman
+                TextButton (
+                  onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProductPage(),
+                          ),
+                      );
+                }, 
+                child: const Text("Lihat Selengkapnya"),
+                ),
+              //product list
               Expanded(
                 child: products.isEmpty
                     ? const Center(child: Text("Belum ada produk"))
