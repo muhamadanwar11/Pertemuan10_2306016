@@ -163,11 +163,21 @@ void showForm({ProductModel? product, int? index}){
         margin: const EdgeInsets.all(20),
         child: Column(
           children: [
-            
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                    onPressed: () => showForm(),
+                    child: const Text("Tambah Product"),
+                  ),
+                  ),
+                ],
+              )
           ],
         ),
           
       ),
+       
     );
   }
 }
