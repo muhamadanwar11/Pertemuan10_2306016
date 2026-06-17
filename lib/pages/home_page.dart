@@ -170,54 +170,7 @@ class _HomePageState extends State<HomePage> {
                 child: const Text("Lihat Selengkapnya"),
                 ),
               //product list
-              Expanded(
-                child: products.isEmpty
-                    ? const Center(child: Text("Belum ada produk"))
-                    : ListView.builder(
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ), 
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(15),
-                              title: Text(
-                                product.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ), 
-                              ), 
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 5),
-                                  Text("Rp ${product.price}"),
-                                  const SizedBox(height: 5),
-                                  Text(product.description),
-                                ],
-                              ), 
-                              leading: IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.orange,
-                                ), 
-                                onPressed: () => showForm(product: products[index], index: index),
-                              ), 
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ), 
-                                onPressed: () => deleteProduct(index),
-                              ), 
-                            ), 
-                          );
-                        },
-                      ),
-              ),
+            
             ],
           ),
         ),

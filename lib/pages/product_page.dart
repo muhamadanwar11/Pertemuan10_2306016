@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306016/models/product_model.dart';
+import 'package:pertemuan10_2306016/pages/product_detail_pade.dart';
+import 'package:pertemuan10_2306016/widgets/product_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -172,7 +174,31 @@ void showForm({ProductModel? product, int? index}){
                   ),
                   ),
                 ],
-              )
+              ),
+              Expanded(
+                child: products.isEmpty
+                    ? const Center(child: Text("Belum ada produk"))
+                    : ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return  ProductCard(
+                            product: product,
+                            onDelete: () => deleteProduct(index),
+                            onEdit: () => 
+                                showForm(product: product, index: index),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                ProductDetailPage(product: product),
+                              ),
+                              ),
+                          );
+                        },
+                      ),
+              ),
+              
           ],
         ),
           
@@ -181,3 +207,11 @@ void showForm({ProductModel? product, int? index}){
     );
   }
 }
+
+
+
+
+
+
+
+
