@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306016/models/product_model.dart';
-import 'package:pertemuan10_2306016/pages/product_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pertemuan10_2306016/widgets/product_card.dart';
+import 'product_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String username = "";
 
-  //PRODUCT LIST
+  //variabel utama dari daftar produk
   List<ProductModel> products = [];
   int totalProducts = 0;
 
@@ -24,9 +25,7 @@ class _HomePageState extends State<HomePage> {
     getUser();
     loadProducts();
   }
-//===============
-// loadd produk
-//===============
+
   Future<void> loadProducts() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> productsList = prefs.getStringList('products') ?? [];
@@ -39,8 +38,6 @@ class _HomePageState extends State<HomePage> {
       .toList();
     });
   }
-  
-
 
   Future<void> getUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,17 +46,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
   }
-
   
-
-
-//UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,32 +143,43 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: .spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Tota Produk: ${totalProducts.toString()}",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    "Total Produk : ${totalProducts.toString()}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ],
-              ), 
-                // tombol pindah halaman
-                TextButton (
-                  onPressed: (){
+                  TextButton(
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ProductPage(),
-                          ),
+                        ),
                       );
-                }, 
-                child: const Text("Lihat Selengkapnya"),
-                ),
-              //product list
-            
+                    },
+                    child: const Text("Lihat selengkapnya"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: products.isEmpty
+                    ? const Center(child: Text("Belum ada produk"))
+                    : ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(
+                            product: product,
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
         ),
       ),
-     
     );
   }
 }

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -15,42 +14,42 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> { 
+  bool isLogin = false;
+  bool isLoading = true;
 
-bool isLogin = false;
-bool isLoading = true;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    checkLoginn();
+    checkLogin();
   }
-  
-  Future<void> checkLoginn() async{
+
+
+  Future<void> checkLogin() async {
     final prefs = await SharedPreferences.getInstance();
     isLogin = prefs.getBool('isLogin') ?? false;
     setState(() {
-      isLoading =false;
+      isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading){
-      return const MaterialApp(
-        home: Scaffold(
-          body: Center(
+ 
+    if (isLoading) {
+      return const MaterialApp( 
+        home: Scaffold( 
+          body: Center( 
             child: CircularProgressIndicator(),
           ),
         ),
       );
     }
+
+    
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: 
-      isLogin
-      ? const HomePage()
-      : const LoginPage(),
+      debugShowCheckedModeBanner: false, 
+      home: isLogin ? const HomePage() : const LoginPage(),
     );
-}
+  }
 }

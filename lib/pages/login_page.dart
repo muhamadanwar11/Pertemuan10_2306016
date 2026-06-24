@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,29 +11,23 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
       final prefs = await SharedPreferences.getInstance();
-
       await prefs.setBool('isLogin', true);
-      await prefs.setString('username', usernameController.text);
+      await prefs.setString('username', _usernameController.text);
 
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => const HomePage())
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
     }
-  }
-
-  @override
-  void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
-    super.dispose();
   }
 
   @override
@@ -60,59 +52,57 @@ class _LoginPageState extends State<LoginPage> {
                     const Icon(Icons.person, size: 80, color: Colors.green),
                     const SizedBox(height: 20),
                     TextFormField(
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'username',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                      controller: _usernameController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Username tidak boleh kosong';
                         }
                         return null;
                       },
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      controller: passwordController,
+                      controller: _passwordController,
                       obscureText: _obscurePassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password tidak boleh kosong';
+                        }
+                        if (value.length < 5) {
+                          return 'Password minimal 5 karakter';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
-                        labelText: 'password',
+                        labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                           onPressed: () {
                             setState(() {
                               _obscurePassword = !_obscurePassword;
                             });
                           },
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password tidak boleh kosong';
-                        }
-                        if (value.length < 8) {
-                          return 'Password harus minimal 8 karakter';
-                        }
-                        if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
-                          return 'Password hanya boleh terdiri dari huruf atau angka';
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
                       child: ElevatedButton(
                         onPressed: login,
                         style: ElevatedButton.styleFrom(
@@ -122,11 +112,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         child: const Text(
-                          "login",
+                          'Login',
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -137,4 +127,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
